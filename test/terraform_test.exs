@@ -20,7 +20,7 @@ defmodule SocketTerraformTest do
 
   defmodule MySocket do
     use Cand.Socket
-    
+
     # Use the `init` function to configure your Socket.
     def init({parent_pid, 103} = _user_init_state, socket_pid) do
       %{parent_pid: parent_pid, socket_pid: socket_pid}
@@ -70,8 +70,10 @@ defmodule SocketTerraformTest do
     {:ok, _c_pid} = MySocket.start_link({self(), 103})
     assert_receive {:frame, {0x103, _timestamp, "ggg"}}, 500
 
+    Process.sleep(100)
+
     assert :ok == Cand.Protocol.send_frame(d1_pid, 291, <<103, 103, 103>>)
     assert_receive {:handle_frame, {291, _timestamp, "ggg"}}, 500
   end
-  
+
 end

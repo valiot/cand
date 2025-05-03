@@ -36,3 +36,21 @@ echo(pid)
 rawmode(pid)
 
 bcmmode(pid)
+
+## Test
+
+Before running the tests, you need to set up a virtual CAN interface. Run the following commands:
+
+```bash
+sudo ip link add dev vcan0 type vcan
+sudo ip link set vcan0 up
+```
+
+You may need to install the following dependencies:
+- can-utils (for Linux-based systems)
+
+Then run the tests with:
+
+```bash
+mix test
+```

@@ -19,7 +19,7 @@ defmodule ActiveSocketTest do
 
     {:ok, %{port: port, m_pid: m_pid}}
   end
-  
+
   test "Socket connection (Active mode)", state do
     {:ok, pid} = Cand.Socket.start_link()
     assert :ok == Cand.Socket.connect(pid, {127,0,0,1}, state.port, [active: true])
@@ -49,6 +49,9 @@ defmodule ActiveSocketTest do
 
     assert :ok == Cand.Protocol.raw_mode(d1_pid)
 
+    # Wait for the socketcan to be ready
+    Process.sleep(100)
+
     assert :ok == Cand.Protocol.send_frame(d1_pid, 291, <<103, 103, 103>>)
     refute_receive {:frame, {291, _timestamp, "ggg"}}, 500
 
@@ -67,6 +70,9 @@ defmodule ActiveSocketTest do
 
     assert :ok == Cand.Protocol.raw_mode(d1_pid)
     assert :ok == Cand.Protocol.raw_mode(d2_pid)
+
+    # Wait for the socketcan to be ready
+    Process.sleep(100)
 
     assert :ok == Cand.Protocol.send_frame(d1_pid, 291, <<103, 103, 103>>)
     # Readed by d2_pid
@@ -92,7 +98,7 @@ defmodule ActiveSocketTest do
 
     assert :ok == Cand.Protocol.subscribe(d1_pid, 259)
     assert :ok == Cand.Protocol.send_frame(d2_pid, 0x103, <<123, 123, 123>>)
-    
+
     # Readed by d1_pid
     assert_receive {:frame, {259, _timestamp, "{{{"}}, 500
 
@@ -100,7 +106,7 @@ defmodule ActiveSocketTest do
 
     # Readed by d1_pid
     assert_receive {:frame, {259, _timestamp, "ggg"}}, 500
-    
+
     assert :ok == Cand.Protocol.delete_cyclic_frame(d2_pid, 0x103)
 
     refute_receive {:frame, {259, _timestamp, "ggg"}}, 500
