@@ -345,17 +345,17 @@ defmodule Cand.Socket do
   end
 
   # Active Mode
-  def handle_info({:tcp, _port, '< hi >'}, state) do
+  def handle_info({:tcp, _port, ~c"< hi >"}, state) do
     Logger.info("(#{__MODULE__}) Connected. #{inspect(state)}")
     {:noreply, %{state | reconnect: true}}
   end
 
-  def handle_info({:tcp, _port, '< ok >'}, state) do
+  def handle_info({:tcp, _port, ~c"< ok >"}, state) do
     Logger.debug("(#{__MODULE__}) OK. #{inspect(state)}")
     {:noreply, state}
   end
 
-  def handle_info({:tcp, _port, '< echo >'}, state) do
+  def handle_info({:tcp, _port, ~c"< echo >"}, state) do
     Logger.debug("(#{__MODULE__}) Echo received. #{inspect(state)}")
     {:noreply, state}
   end
@@ -385,8 +385,8 @@ defmodule Cand.Socket do
   defp add_new_cmd("< sendpdu " <> _payload, last_cmds), do: last_cmds
   defp add_new_cmd(cmd, last_cmds), do: Enum.uniq(last_cmds ++ [cmd])
 
-  defp receive_reponse("< send " <> _payload, _socket, _timeout), do: {:ok, '< ok >'}
-  defp receive_reponse("< sendpdu " <> _payload, _socket, _timeout), do: {:ok, '< ok >'}
+  defp receive_reponse("< send " <> _payload, _socket, _timeout), do: {:ok, ~c"< ok >"}
+  defp receive_reponse("< sendpdu " <> _payload, _socket, _timeout), do: {:ok, ~c"< ok >"}
   defp receive_reponse(_cmd, socket, timeout), do: :gen_tcp.recv(socket, 0, timeout)
 
   defp parse_messages(messages) do
